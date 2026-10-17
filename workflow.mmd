@@ -1,11 +1,8 @@
 flowchart TD
-    A[Authorized request with operation ID] --> B[Begin write transaction]
-    B --> C{Operation already recorded?}
-    C -->|Same arguments| D[Read stored response]
-    C -->|Changed arguments| E[Rollback and return conflict]
-    C -->|No| F[Insert task and operation result]
-    D --> G[Commit]
-    F --> G
-    G --> H[Return result]
-    H -. response lost .-> I[Retry with the same operation ID]
-    I --> B
+    A[Authorized request<br/>with operation ID] --> B[Begin write transaction]
+    B --> C[Look up the operation<br/>and find no record]
+    C --> D[Insert support task]
+    D --> E[Store its replay result]
+    E --> F[Commit both writes]
+    F --> G[Return the receipt]
+    G -. reply lost .-> H[Retry with the<br/>original operation ID]
