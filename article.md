@@ -152,4 +152,4 @@ Before connecting a write tool, I would ask one concrete question: if the effect
 
 ---
 
-Article snapshot prepared 17 October 2026. The [website article](https://subodhjena.com/blog/tool-calls-that-can-be-retried-safely) is canonical; code and fixtures are maintained in this repository. Archive spacing was selected by the author; the examples were prepared and run on 17 October 2026.
+Article snapshot prepared 17 October 2026. The [website article](https://subodhjena.com/blog/tool-calls-that-can-be-retried-safely) is canonical; code and fixtures are maintained in this repository. Examples prepared and run on 17 October 2026.

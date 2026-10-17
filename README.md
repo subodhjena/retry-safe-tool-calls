@@ -2,7 +2,7 @@
 
 Create a local support task with tenant-scoped operation IDs and an atomic replay record. Reproduce a response lost after commit.
 
-This is the runnable companion to [the article](https://subodhjena.com/blog/tool-calls-that-can-be-retried-safely). Website MDX is the canonical article; [article.md](article.md) is a deliberate GitHub-readable snapshot. Code and fixtures are canonical here. Research and the examples were prepared on 17 October 2026; the website uses the author-approved archive spacing.
+This is the runnable companion to [the article](https://subodhjena.com/blog/tool-calls-that-can-be-retried-safely). Website MDX is the canonical article; [article.md](article.md) is a deliberate GitHub-readable snapshot. Code and fixtures are canonical here. Research and examples updated on 17 October 2026.
 
 ## Reproduce
 
