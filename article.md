@@ -58,20 +58,17 @@ worker B: create another task
 
 Writing the operation record first, then creating the task outside its transaction, has a different failure: the record can survive while the task does not. Reversing those writes can leave a task without its replay record.
 
-In the companion, both tables belong to one SQLite database. A write transaction covers the lookup, the task insertion, and the stored response. The unique key on the operations table supplies a durable identity constraint.
+In the companion, both tables belong to one SQLite database. A write transaction covers the lookup, the task insertion, and the stored response. The unique key on the operations table supplies a durable identity constraint. Here is the creation path for a new operation. A replay reads the existing result instead; changed arguments leave through a rollback.
 
 ```mermaid
 flowchart TD
-    A[Authorized request with operation ID] --> B[Begin write transaction]
-    B --> C{Operation already recorded?}
-    C -->|Same arguments| D[Read stored response]
-    C -->|Changed arguments| E[Rollback and return conflict]
-    C -->|No| F[Insert task and operation result]
-    D --> G[Commit]
-    F --> G
-    G --> H[Return result]
-    H -. response lost .-> I[Retry with the same operation ID]
-    I --> B
+    A[Authorized request<br/>with operation ID] --> B[Begin write transaction]
+    B --> C[Look up the operation<br/>and find no record]
+    C --> D[Insert support task]
+    D --> E[Store its replay result]
+    E --> F[Commit both writes]
+    F --> G[Return the receipt]
+    G -. reply lost .-> H[Retry with the<br/>original operation ID]
 ```
 
 The implementation uses `BEGIN IMMEDIATE`. [SQLite's transaction documentation](https://sqlite.org/lang_transaction.html) explains that this starts a write transaction immediately; another writer can make it fail with `SQLITE_BUSY`. The example waits up to five seconds for the lock. That makes the concurrency test practical, but it is not a claim about throughput or a production timeout policy.
@@ -109,7 +106,7 @@ Conflict: Same operation ID used with different arguments
 
 Seven tests cover the lost response, rollback before commit, changed arguments, separate intents with matching subjects, tenant scope, invalid input, and concurrent delivery. Sixteen calls from eight threads return one result and leave one task. That is a local concurrency check, not a load test.
 
-The [tested revision](https://github.com/subodhjena/retry-safe-tool-calls/tree/acf4eb8ac8fcd8a8b8f4d47eaed41d9638fba6cd) includes the complete implementation and tests. Failure injection raises exceptions at chosen boundaries; it does not simulate power loss, a damaged disk, or a distributed database failover.
+The [tested revision](https://github.com/subodhjena/retry-safe-tool-calls/tree/9c1a87d0af45ed63ee2436b552d7e36c6aec5626) includes the complete implementation and tests. Failure injection raises exceptions at chosen boundaries; it does not simulate power loss, a damaged disk, or a distributed database failover.
 
 ### A replay result is a receipt
 
